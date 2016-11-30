@@ -1,3 +1,7 @@
+# This will set up dirty and quick lazada data from webscraping
+
+# Set up a mock system and PyQT4 so that the server can make a request for javascript html first before getting the web content (soup) for analysis
+
 import sys
 from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import QUrl
@@ -16,46 +20,22 @@ class Client(QWebPage):
 	def on_page_load(self):
 		self.app.quit()
 
+# Getting the soup
 url = 'https://www.lazada.sg/'
 client_response = Client(url)
-source = client_response.mainFrame().toHtml()
+source = str(client_response.mainFrame().toHtml().toUtf8())
+soup = bs.BeautifulSoup(source, 'lxml')
 
-soup= bs.BeautifulSoup(source,'lxml')
 
-print(soup)
-# print(soup.title.string)
-# print(soup.title.text)
-# print(soup.p)
-# print(soup.find_all('p'))
+# Printing it to csv dataset
 
-# for paragraph in soup.find_all('p'):
-# 	print(paragraph.text.encode('utf-8'))
+writer = open('Dataset/attributeshomepage.csv', 'wb')
 
-# print(soup.get_text().encode('utf-8'))
+for h3 in soup.find_all('h3',class_='c-product-item__title'):
+	print(h3.text.encode('utf-8'))
+	writer.write(h3.text.encode('utf-8'))
 
-# for url in soup.find_all('a'):
-# 	print(url.get('href'))
-# Navigating around website
-# nav= soup.nav
-# for url in nav.find_all('a'):
-# 	print(url.get('href'))
 
-# body = soup.body
-# for paragraph in body.find_all('p'):
-# 	print(paragraph.text.encode('utf-8'))
 
-# for div in soup.find_all('div',class_='body'):
-# 	print(div.text.encode('utf-8'))
+f.close()
 
-# Table
-# table = soup.table
-# table_rows = table.find_all('tr')
-# for tr in table_rows:
-# 	td = tr.find_all('td')
-# 	row = [i.text.encode('utf-8') for i in td]
-# 	print row
-
-# Panda web table parsing
-# dfs= pd.read_html('https://pythonprogramming.net/parsememcparseface/',header=0)
-# for df in dfs:
-# 	print(df)
